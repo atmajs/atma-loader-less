@@ -104,10 +104,11 @@ var HttpHandler = Class({
 });
 
 include.exports = {
+	
+	/* >>> Atma.Toolkit */
 	register: function(rootConfig){
 		
-		var handlers = [];
-		
+		var handlers = {};
 		_extensions.forEach(function(ext){
 			handlers['(.' + ext + '.map$)'] = HttpHandler;
 			handlers['(.' + ext + '$)'] = HttpHandler;	
@@ -118,6 +119,16 @@ include.exports = {
 			server: {
 				handlers: handlers
 			}
+		});
+	},
+	
+	/* >>> Atma.Server */
+	attach: function(app){
+		_extensions.forEach(function(ext){
+			
+			app
+				.handlers
+				.registerHandler('(.' + ext + '$)', HttpHandler);
 		});
 	}
 };
