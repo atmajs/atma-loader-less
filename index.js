@@ -30,7 +30,9 @@ if (File) {
 		var compiled = less_compile(file.content, file.uri);
 		
 		file.error = compiled.error;
+		file.sourceMap = compiled.sourceMap;
 		file.content = compiled.content || compiled.error;
+		
 	};
 	
 	
@@ -57,6 +59,7 @@ var HttpHandler = Class({
 		
 		var url = req.url,
 			isSourceMap = url.substr(-4) === '.map';
+
 		if (isSourceMap) 
 			url = url.substring(0, url.length - 4);
 			
@@ -83,7 +86,7 @@ var HttpHandler = Class({
 		}
 		
 		if (file == null) {
-			this.resolve('Not Found - ' + url, 404, 'plain/text');
+			this.reject('Not Found - ' + url, 404, 'plain/text');
 			return;
 		}
 		
@@ -110,8 +113,8 @@ include.exports = {
 		
 		var handlers = {};
 		_extensions.forEach(function(ext){
-			handlers['(.' + ext + '.map$)'] = HttpHandler;
-			handlers['(.' + ext + '$)'] = HttpHandler;	
+			handlers['(\\.' + ext + '$)'] = HttpHandler;	
+			handlers['(\\.' + ext + '\\.map$)'] = HttpHandler;
 		});
 		
 		rootConfig.$extend({
@@ -125,10 +128,8 @@ include.exports = {
 	/* >>> Atma.Server */
 	attach: function(app){
 		_extensions.forEach(function(ext){
-			
-			app
-				.handlers
-				.registerHandler('(.' + ext + '$)', HttpHandler);
+			app.handlers.registerHandler('(\\.' + ext + '$)', HttpHandler);
+			app.handlers.registerHandler('(\\.' + ext + '\\.map$)', HttpHandler);
 		});
 	}
 };
@@ -147,30 +148,37 @@ var less_compile;
 			parser = new _less.Parser({
 					syncImport: true,
 					filename: filename,
-					paths: [ uri.toLocalDir() ],
-					sourceMap: true
+					paths: [ uri.toLocalDir() ]
 				}),
 				css;
         
-		var out;
+		var out = {
+			error: null,
+			content: null,
+			sourceMap: null
+		};
+		
 		parser.parse(source, function(error, tree) {
 			if (error) {
 				logger.error('<less parser %s>', filename, error);
 				
-				out = {
-					error: error_format(error)
-				};
+				out.error = error_format(error);
 				return;
 			}
 			try {
-				out = {
-					content: tree.toCSS({ sourceMap: true })
-				};
-			} catch (error) {
-				out = {
-					error: error_format(error)
-				};
+				out.content = tree.toCSS({ 
 					
+					sourceMap: true,
+					sourceMapURL: uri.file + '.map',
+					sourceMapRootpath: 'file:///',
+					outputSourceFiles: true,
+					writeSourceMap: function(sourceMap){
+						out.sourceMap = sourceMap;
+					}
+				});
+			
+			} catch (error) {
+				out.error = error_format(error);
 				logger.error('<less builder %s>', filename, error);
 			}
 		});
