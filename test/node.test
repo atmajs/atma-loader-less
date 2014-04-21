@@ -1,0 +1,35 @@
+
+var FILE = './foo.less',
+	FILE_ERRORED_BUILDER = './foo-errored-builder.less',
+	FILE_ERRORED_PARSER = './foo-errored-parser.less'
+	;
+	
+UTest({
+	
+	'include': function(done){
+
+		include
+			.load(FILE)
+			.done(function(resp){
+
+				has_(resp.load.foo, '#ffffff');
+				done();
+			});
+	},
+	
+	'io.File.read': function(){
+		
+		var content = io.File.read(FILE);
+		has_(content, '#ffffff');
+	},
+	
+	'builder error': function(){
+		var content = io.File.read(FILE_ERRORED_BUILDER);
+		has_(content, 'error');
+		has_(content, 'rgb');
+	},
+	'parser error': function(){
+		var content = io.File.read(FILE_ERRORED_PARSER);
+		has_(content, 'Unrecognised input');
+	}
+});

@@ -1,0 +1,14 @@
+UTest({
+	
+	'include': function(done){
+
+		include
+			.load('./foo.less')
+			.done(function(resp){
+
+				has_(resp.load.foo, '#ffffff');
+				done();
+			});
+	}
+
+});
