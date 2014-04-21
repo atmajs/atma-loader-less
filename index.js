@@ -96,7 +96,7 @@ var HttpHandler = Class({
 			
 		var mimeType = isSourceMap
 			? 'application/json'
-			: 'text/style'
+			: 'text/css'
 			;
 			
 		this.resolve(source, 200, mimeType);
