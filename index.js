@@ -22,7 +22,7 @@ if (config){
 var net = global.net,
 	File = global.io.File;
 if (File) {
-	File.middleware['less'] = function(file){
+	File.middleware['atma-loader-less'] = function(file){
 			
 		if (typeof file.content !== 'string')
 			file.content = file.content.toString();
@@ -35,7 +35,7 @@ if (File) {
 	
 	
 	File
-		.registerExtensions(obj_createMany(_extensions, [ 'less:read' ]));
+		.registerExtensions(obj_createMany(_extensions, [ 'atma-loader-less:read' ]));
 }
 
 /* >>> `IncludeJS` extension */
