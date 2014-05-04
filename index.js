@@ -1,27 +1,52 @@
 if (typeof include === 'undefined' ) 
 	throw new Error('<atma-loader-less> should be loaded in `atma` environment');
 
+
+include.exports = {
+	
+	/* >>> Atma.Toolkit (registered via server)*/
+	register: function(rootConfig){},
+	
+	/* >>> Atma.Server */
+	attach: function(app){
+		_extensions.forEach(function(ext){
+			var rgx = '(\\.EXT$)|(\\.EXT\\?)'.replace(/EXT/g, ext),
+				rgx_map = '(\\.EXT\\.map$)|(\\.EXT\\.map\\?)'.replace(/EXT/g, ext);
+			
+			app.handlers.registerHandler(rgx, HttpHandler);
+			app.handlers.registerHandler(rgx_map, HttpHandler);
+		});
+	}
+};
+
+var net = global.net;
 var _extensions = [ 'less' ],
-	_options = {}
-	;
-var config = global.app && global.app.config;
-if (config){
+	_options = {};
+
+(function(config){
+	
+	if (config == null) 
+		return;
 	
 	var ext = config.$get('settings.less_loader.extension');
-	if (ext) {
-		_extensions = Array.isArray(ext)
-			? ext
-			: [ ext ]
-			;
-	}
-}
+	if (ext == null)
+		return;
+	
+	_extensions = Array.isArray(ext)
+		?   ext
+		: [ ext ]
+		;
+	
+}(global.app && global.app.config));
 
 
 
-/* >>> `io.File` extension */
-var net = global.net,
-	File = global.io.File;
-if (File) {
+/* ==== `io.File` extension */
+
+(function(File){
+	if (File == null)
+		return;
+
 	File.middleware['atma-loader-less'] = function(file){
 			
 		if (typeof file.content !== 'string')
@@ -35,24 +60,27 @@ if (File) {
 		
 	};
 	
-	
 	File
 		.registerExtensions(obj_createMany(_extensions, [ 'atma-loader-less:read' ]));
-}
 
-/* >>> `IncludeJS` extension */
-include.cfg({
-	loader: obj_createMany(_extensions, {
-		
-		process: function(source, resource){
-			var compiled = less_compile(source, new net.Uri(resource.url));
+}(global.io && global.io.File));
+
+
+/* ==== `IncludeJS` extension */
+(function(){
+	include.cfg({
+		loader: obj_createMany(_extensions, {
 			
-			return compiled.content || compiled.error;
-		}
-	})
-});
+			process: function(source, resource){
+				var compiled = less_compile(source, new net.Uri(resource.url));
+				
+				return compiled.content || compiled.error;
+			}
+		})
+	});
+}());
 
-/* >>> Http */
+/* ==== Http */
 var HttpHandler = Class({
 	Base: Class.Deferred,
 	process: function(req, res, config){
@@ -106,33 +134,6 @@ var HttpHandler = Class({
 	}
 });
 
-include.exports = {
-	
-	/* >>> Atma.Toolkit */
-	register: function(rootConfig){
-		
-		var handlers = {};
-		_extensions.forEach(function(ext){
-			handlers['(\\.' + ext + '$)'] = HttpHandler;	
-			handlers['(\\.' + ext + '\\.map$)'] = HttpHandler;
-		});
-		
-		rootConfig.$extend({
-			
-			server: {
-				handlers: handlers
-			}
-		});
-	},
-	
-	/* >>> Atma.Server */
-	attach: function(app){
-		_extensions.forEach(function(ext){
-			app.handlers.registerHandler('(\\.' + ext + '$)', HttpHandler);
-			app.handlers.registerHandler('(\\.' + ext + '\\.map$)', HttpHandler);
-		});
-	}
-};
 
 
 
@@ -204,23 +205,4 @@ function obj_createMany(properties, value){
 	});
 	
 	return obj;
-}
-
-function obj_setProperty(obj, prop, value){
-	obj[prop] = value;
-	return obj;
-}
-
-function obj_extend(target){
-	var imax = arguments.length,
-		i = 1,
-		obj;
-	for(; i < imax; i++){
-		obj = arguments[0];
-		
-		for(var key in obj)
-			target[key] = obj[key]
-	}
-
-	return target;
 }
