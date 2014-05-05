@@ -97,20 +97,20 @@ var HttpHandler = Class({
 		var file, path;
 		if (config.static) {
 			path =  net.Uri.combine(config.static, url);
-			if (File.exists(path))
-				file = new File(path);
+			if (io.File.exists(path))
+				file = new io.File(path);
 		}
 		
 		if (file == null && config.base) {
 			path =  net.Uri.combine(config.base, url);
-			if (File.exists(path))
-				file = new File(path);
+			if (io.File.exists(path))
+				file = new io.File(path);
 		}
 		
 		if (file == null) {
 			path =  net.Uri.combine(process.cwd(), url);
-			if (File.exists(path))
-				file = new File(path);
+			if (io.File.exists(path))
+				file = new io.File(path);
 		}
 		
 		if (file == null) {
