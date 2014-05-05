@@ -1,1 +1,4 @@
+.npmignore
+.travis
 test/
+*.komodoproject

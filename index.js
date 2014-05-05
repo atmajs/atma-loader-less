@@ -10,8 +10,8 @@ include.exports = {
 	/* >>> Atma.Server */
 	attach: function(app){
 		_extensions.forEach(function(ext){
-			var rgx = '(\\.EXT$)|(\\.EXT\\?)'.replace(/EXT/g, ext),
-				rgx_map = '(\\.EXT\\.map$)|(\\.EXT\\.map\\?)'.replace(/EXT/g, ext);
+			var rgx = '((\\.EXT$)|(\\.EXT\\?))'.replace(/EXT/g, ext),
+				rgx_map = '((\\.EXT\\.map$)|(\\.EXT\\.map\\?))'.replace(/EXT/g, ext);
 			
 			app.handlers.registerHandler(rgx, HttpHandler);
 			app.handlers.registerHandler(rgx_map, HttpHandler);

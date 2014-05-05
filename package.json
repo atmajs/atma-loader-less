@@ -1,6 +1,6 @@
 {
     "name": "atma-loader-less",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Less compiler for `atma-io`, `IncludeJS` and `atma-server`.",
     "author": "Alexander Kit (alex.kit@atmajs.com)",
     "main": "index.js",
