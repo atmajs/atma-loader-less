@@ -34,7 +34,7 @@
 				if (error) {
 					logger.error('<less parser %s>', path, error);
 					
-					out.error = error_format(error);
+					out.content = out.error = error_format(error);
 					return;
 				}
 				try {
@@ -50,7 +50,7 @@
 					});
 				
 				} catch (error) {
-					out.error = error_format(error);
+					out.content = out.error = error_format(error);
 					logger.error('<less builder %s>', path, error);
 				}
 			});
