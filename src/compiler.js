@@ -15,45 +15,39 @@
 					sourceMap: null
 				};
 				
-			var base, css, parser;
-			if (options && options.base) {
-				base = options.base;
-				if (base[0] === '/') {
-					base = net.Uri.combine(process.cwd(), base);
-				}
-				paths.push(new net.Uri(base).toLocalDir());
+			var css, parser;
+			var base = options && options.base || '/';
+
+			if (base[0] === '/') {
+				base = net.Uri.combine(process.cwd(), base);
 			}
+
+			paths.push(new net.Uri(base).toLocalDir());
 			
-			parser = new _Less.Parser({
+			
+			
+			var options = {
+				async: false,
 				syncImport: true,
+				
+				sourceMap: true,
+				sourceMapURL: uri.file + '.map',
+				sourceMapRootpath: 'file:///',
+				outputSourceFiles: true,
+
 				filename: path,
 				paths: paths
-			});
-			
-			parser.parse(source, function(error, tree) {
+			}
+
+			_Less.render(source, options, function (error, data) {
 				if (error) {
-					logger.error('<less parser %s>', path, error);
-					
-					out.content = out.error = error_format(error);
+					out.content = out.error = error;
 					return;
 				}
-				try {
-					out.content = tree.toCSS({ 
-						
-						sourceMap: true,
-						sourceMapURL: uri.file + '.map',
-						sourceMapRootpath: 'file:///',
-						outputSourceFiles: true,
-						writeSourceMap: function(sourceMap){
-							out.sourceMap = sourceMap;
-						}
-					});
-				
-				} catch (error) {
-					out.content = out.error = error_format(error);
-					logger.error('<less builder %s>', path, error);
-				}
+				out.content = data.css;
+				out.sourceMap = data.map;
 			});
+
 			return out;
 		}
 	};

@@ -1,12 +1,12 @@
 {
     "name": "atma-loader-less",
-    "version": "1.0.3",
+    "version": "1.0.5",
     "description": "Less compiler for `atma-io`, `IncludeJS` and `atma-server`.",
     "author": "Alexander Kit (alex.kit@atmajs.com)",
     "main": "index.js",
     "license": "MIT",
     "dependencies": {
-        "less": "latest"
+        "less": "~2.4.0"
     },
     "devDependencies": {
         "atma": "latest",
