@@ -1,6 +1,6 @@
 {
     "name": "atma-loader-less",
-    "version": "1.1.2",
+    "version": "1.1.4",
     "description": "Less compiler for `atma-io`, `IncludeJS` and `atma-server`.",
     "author": "Alexander Kit (alex.kit@atmajs.com)",
     "main": "index.js",
@@ -10,10 +10,11 @@
         "url": "https://github.com/atmajs/atma-loader-less"
     },
     "scripts": {
-        "build": "app-bundler"
+        "build": "app-bundler",
+        "upd-base": "npm i atma-io-middleware-base@1.0.28 && atma bump && npm publish && git commit -am \"update (base-mid)\" && git push"
     },
     "dependencies": {
-        "atma-io-middleware-base": "^1.0.28",
+        "atma-io-middleware-base": "^1.0.31",
         "atma-utils": "^0.1.13",
         "less": "^3.0.4"
     },
